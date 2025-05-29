@@ -10,4 +10,3 @@ reg_win = startForm()
 reg_win.show()
 
 app.exec_()
-#

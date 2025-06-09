@@ -1,7 +1,7 @@
 # Окно входа в игру
 
 from PyQt5.QtWidgets import (QWidget, QMainWindow, QDesktopWidget,
-QLineEdit, QGridLayout, QVBoxLayout, QCheckBox, QPushButton)
+QLineEdit, QGridLayout, QVBoxLayout, QCheckBox, QPushButton, QFileDialog)
 from PyQt5.QtCore import Qt
 
 from UI.question_menu import QuestionMenuWindow
@@ -40,6 +40,7 @@ class startForm(QMainWindow):
         # События
         self.exit_btn.clicked.connect(self.close) # Срабатывает при нажатии на кнопку "Выход"
         self.start_btn.clicked.connect(self.start_game) # Срабатывает при нажатии на кнопку "Старт"
+        self.change_game_btn.clicked.connect(self.select_game) # Срабатывает при нажатии на кнопку "Выбрать тему"
 
     # Метод для выравнивания главного окна по центру
     def center(self):
@@ -99,6 +100,7 @@ class startForm(QMainWindow):
         self.grid.setColumnStretch(2, 1)
 
     
+    # Метод который получает имена команд
     def get_comand_name(self):
         result = []
         for i in range(5):
@@ -122,3 +124,7 @@ class startForm(QMainWindow):
         self.questionMenuWindow = QuestionMenuWindow(team_names)
         self.questionMenuWindow.show()
         
+
+    def select_game(self):
+        file_path = QFileDialog.getOpenFileName(None, "Выберите тему игры","","Все файлики (*)")
+        print (file_path)

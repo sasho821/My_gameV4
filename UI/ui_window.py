@@ -99,9 +99,26 @@ class startForm(QMainWindow):
         self.grid.setColumnStretch(2, 1)
 
     
+    def get_comand_name(self):
+        result = []
+        for i in range(5):
+            buf = self.findChild(QLineEdit, "team_inp_field_{}".format(i)).text()
+            result.append(buf)
+        return result
+
+    
+    def get_game_settings(self):
+        pass
+
+
     def start_game(self):
         print("Start Game")
         self.close()
-        self.questionMenuWindow = QuestionMenuWindow()
+
+        # Получаю настройки и название команд для передачи в игру
+        team_names = self.get_comand_name()
+        print(team_names)
+
+        self.questionMenuWindow = QuestionMenuWindow(team_names)
         self.questionMenuWindow.show()
         

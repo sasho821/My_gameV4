@@ -14,7 +14,8 @@ class Question(QMainWindow):
         grid_layout = QGridLayout()
         
         self.time_bar = QProgressBar()
-        
+        self.time_bar.setFixedSize(600,100)
+
         self.question_frame = QFrame()
         self.question_frame.setFrameShape(QFrame.Box)
         self.question_frame.setFrameShadow(QFrame.Raised)
@@ -31,6 +32,11 @@ class Question(QMainWindow):
         grid_layout.addWidget(self.ans_btn_3, 3, 2, alignment=Qt.AlignCenter)
         grid_layout.addWidget(self.ans_btn_4, 4, 2, alignment=Qt.AlignCenter)
 
+        grid_layout.setRowStretch(1, 1)
+        grid_layout.setRowStretch(2, 2)
+        grid_layout.setRowStretch(3, 1)
+        grid_layout.setRowStretch(4, 1)
+
         central_widget.setLayout(grid_layout)
 
         self.setCentralWidget(central_widget)
@@ -43,7 +49,7 @@ class AnserBtn(QPushButton):
         self.par = parent # Получаю доступ к окну с вопросами
         self.form = form
 
-        self.resize(200, 100)
+        self.setFixedSize(600,200)
 
         self.clicked.connect(self.on_click)
     

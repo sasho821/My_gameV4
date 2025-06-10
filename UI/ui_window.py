@@ -1,10 +1,13 @@
 # Окно входа в игру
 
 from PyQt5.QtWidgets import (QWidget, QMainWindow, QDesktopWidget,
-QLineEdit, QGridLayout, QVBoxLayout, QCheckBox, QPushButton, QFileDialog)
+QLineEdit, QGridLayout, QVBoxLayout, QCheckBox, QPushButton, QFileDialog,
+QLabel)
 from PyQt5.QtCore import Qt
 
 from UI.question_menu import QuestionMenuWindow
+
+from modules.db import get_data
 
 class startForm(QMainWindow):
     def __init__(self):
@@ -67,6 +70,8 @@ class startForm(QMainWindow):
         self.vbox = QVBoxLayout()
         # Вертикальная стопка с чекбоксами
         self.setingsvbox = QVBoxLayout()
+        # Вериткалььная стопка с рейтингом
+        self.scoreboardvbox = QVBoxLayout()
         
         # Добавляю поля с названиями команд
         for i in range(5):
@@ -89,12 +94,21 @@ class startForm(QMainWindow):
         self.setingsvbox.addWidget(self.random_queue_box, alignment=Qt.AlignTop)
         self.setingsvbox.addWidget(self.cat_in_bag_box, alignment=Qt.AlignTop)
         self.setingsvbox.addWidget(self.mines_box, alignment=Qt.AlignTop)
+        # Добавляю рейтинг команд по теме
+        self.scoreboardvbox.addWidget(QLabel("Рейтинг команд"), alignment=Qt.AlignCenter)
+        self.score_board_lbls = []
+        for i in range(5):
+            buf_lbl = QLabel("Команда_{}".format(i))
+            buf_lbl.setObjectName("scoreboard_lbl_{}".format(i))
+            self.score_board_lbls.append(buf_lbl)
+            self.scoreboardvbox.addWidget(buf_lbl, alignment=Qt.AlignTop | Qt.AlignLeft)
         # Размещаю кнопки на форме
         self.vbox.addWidget(self.start_btn)
         self.vbox.addWidget(self.exit_btn)
         # Размещая вертикальные стопки на главной разметке
         self.grid.addLayout(self.vbox, 0, 2, alignment=Qt.AlignTop)
         self.grid.addLayout(self.setingsvbox, 0, 1, alignment=Qt.AlignTop)
+        self.grid.addLayout(self.scoreboardvbox, 1, 1, alignment=Qt.AlignCenter)
         # Устанавливаю параметры пропорций столбцов
         self.grid.setColumnStretch(1, 2)
         self.grid.setColumnStretch(2, 1)
@@ -126,5 +140,12 @@ class startForm(QMainWindow):
         
 
     def select_game(self):
+        # Получаю путь до базы данных (банка вопросов)
         file_path = QFileDialog.getOpenFileName(None, "Выберите тему игры","","Все файлики (*)")
-        print (file_path)
+        # Извлекаю "прямой путь"
+        database_path = str(file_path[0])
+        # Выполняю запрос на получение списка команд с сортировкой по убыванию
+        team_scores = get_data(database_path, 'SELECT * FROM scores ORDER BY score DESC')
+
+        for i in range(5):
+            self.score_board_lbls[i].setText("{} - {}".format(team_scores[i][1], team_scores[i][2]))

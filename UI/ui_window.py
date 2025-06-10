@@ -8,6 +8,7 @@ from PyQt5.QtCore import Qt
 from UI.question_menu import QuestionMenuWindow
 
 from modules.db import get_data
+from modules.config import Config
 
 class startForm(QMainWindow):
     def __init__(self):
@@ -144,8 +145,10 @@ class startForm(QMainWindow):
         file_path = QFileDialog.getOpenFileName(None, "Выберите тему игры","","Все файлики (*)")
         # Извлекаю "прямой путь"
         database_path = str(file_path[0])
+        # Сохраняю "прямой путь" к базе данных в глобальную область видимости 
+        Config.DATABASE_PATH = database_path
         # Выполняю запрос на получение списка команд с сортировкой по убыванию
         team_scores = get_data(database_path, 'SELECT * FROM scores ORDER BY score DESC')
-
+        # Расставляю название команд в таблице рейтинга
         for i in range(5):
             self.score_board_lbls[i].setText("{} - {}".format(team_scores[i][1], team_scores[i][2]))

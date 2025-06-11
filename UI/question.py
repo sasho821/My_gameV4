@@ -2,12 +2,15 @@
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt
+from UI.controls import QuestionData
 
 class Question(QMainWindow):
-    def __init__(self, parent:QMainWindow=None):
+    def __init__(self, question:QuestionData, parent:QMainWindow=None):
         super().__init__()
         self.showFullScreen()
         self.parent_window = parent # Получаю доступ к родительскому окну
+
+        self.question = question # Получаю всю информацию по вопросу
 
         central_widget = QWidget()
 
@@ -40,6 +43,17 @@ class Question(QMainWindow):
         central_widget.setLayout(grid_layout)
 
         self.setCentralWidget(central_widget)
+
+        self.set_question(question)
+
+
+    # Метод который задает вопрос на форму
+    def set_question(self, quest:QuestionData = None):
+        if quest == None:
+            return
+        print(quest.selected_quest)
+        # Для начала нужно понять тип вопроса
+        
 
 
 class AnserBtn(QPushButton):

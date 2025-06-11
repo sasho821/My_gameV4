@@ -24,7 +24,7 @@ class Quest_btn(QPushButton):
         question_data = QuestionData(self.id)
 
         self.par.hide() # Скрываю окно с сеткой вопросов
-        self.quest_window = Question(self.par) # передаю в новое окно доступ к окну с меню
+        self.quest_window = Question(question_data, self.par) # передаю в новое окно доступ к окну с меню
         self.quest_window.show() # Вывожу на экран окно с вопросом
         
 
@@ -37,6 +37,8 @@ class QuestionData():
         n_quest = len(data) # Количество вопросов по теме
         rand = random.randint(0, n_quest-1) # Случайное число из диапозона вопрос
         selected_quest = data[rand] # Выбираем вопрос из общего числа вопросов
+
+        self.selected_quest = selected_quest
 
         print(selected_quest)
         

@@ -38,7 +38,7 @@ class startForm(QMainWindow):
 
         # метод для размещения всех элементов на форме
         self.add_team_inp_field()
-
+        # Размещаю сетку с элементами на форме
         self.main_layout.setLayout(self.grid)
         self.setCentralWidget(self.main_layout)
         # События
@@ -139,7 +139,7 @@ class startForm(QMainWindow):
         self.questionMenuWindow = QuestionMenuWindow(team_names)
         self.questionMenuWindow.show()
         
-
+    # Метод для получения пути к базе данных с вопросами
     def select_game(self):
         # Получаю путь до базы данных (банка вопросов)
         file_path = QFileDialog.getOpenFileName(None, "Выберите тему игры","","Все файлики (*)")

@@ -2,13 +2,15 @@
 
 from PyQt5.QtWidgets import (QWidget, QMainWindow, QDesktopWidget,
 QLineEdit, QGridLayout, QVBoxLayout, QCheckBox, QPushButton, QFileDialog,
-QLabel)
+QLabel, QMessageBox)
 from PyQt5.QtCore import Qt
 
 from UI.question_menu import QuestionMenuWindow
 
 from modules.db import get_data
 from modules.config import Config
+
+import random
 
 class startForm(QMainWindow):
     def __init__(self):
@@ -119,8 +121,13 @@ class startForm(QMainWindow):
     def get_comand_name(self):
         result = []
         for i in range(5):
+            # Считываю значения с полей ввода
             buf = self.findChild(QLineEdit, "team_inp_field_{}".format(i)).text()
-            result.append(buf)
+            # Проверка значения на заполненность
+            if buf == "":
+                pass
+            else:
+                result.append(buf)
         return result
 
     
@@ -129,12 +136,29 @@ class startForm(QMainWindow):
 
 
     def start_game(self):
-        print("Start Game")
-        self.close()
 
         # Получаю настройки и название команд для передачи в игру
         team_names = self.get_comand_name()
-        print(team_names)
+        # Считаю количество команд в игре
+        quantity_of_teams = len(team_names)
+
+        if quantity_of_teams == 0:
+            QMessageBox.warning(self, "Ошибка", "Вы не создали команды")
+            return
+
+        # Проверка на выбор темы игрын
+        if Config.DATABASE_PATH == None:
+            QMessageBox.warning(self, "Тема игры не выбрана", "Вы не указали тему игры, выберите файл с заданием!")
+            return
+        
+        # Установка случайной очередности игры
+        if self.random_queue_box.isChecked() == True:
+            Config.cur_team = random.randint(0, quantity_of_teams-1)
+
+
+        print("Start Game")
+        print(self.random_queue_box.isChecked())
+        self.close()   
 
         self.questionMenuWindow = QuestionMenuWindow(team_names)
         self.questionMenuWindow.show()
@@ -142,13 +166,13 @@ class startForm(QMainWindow):
     # Метод для получения пути к базе данных с вопросами
     def select_game(self):
         # Получаю путь до базы данных (банка вопросов)
-        file_path = QFileDialog.getOpenFileName(None, "Выберите тему игры","","Все файлики (*)")
+        file_path = QFileDialog.getOpenFileName(None, "Выберите тему игры","","Моя игра (*.db)")
         # Извлекаю "прямой путь"
         database_path = str(file_path[0])
         # Сохраняю "прямой путь" к базе данных в глобальную область видимости 
         Config.DATABASE_PATH = database_path
         # Выполняю запрос на получение списка команд с сортировкой по убыванию
-        team_scores = get_data(database_path, 'SELECT * FROM scores ORDER BY score DESC')
+        team_scores = get_data(database_path, 'SELECT * FROM scores ORDER BY score DESC LIMIT 5')
         # Расставляю название команд в таблице рейтинга
         for i in range(5):
             self.score_board_lbls[i].setText("{} - {}".format(team_scores[i][1], team_scores[i][2]))

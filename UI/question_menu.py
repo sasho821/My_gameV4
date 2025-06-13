@@ -3,6 +3,8 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt
 from UI.controls import Quest_btn
 
+from modules.config import Config
+
 class QuestionMenuWindow(QMainWindow):
     def __init__(self, team_names):
         super().__init__()
@@ -37,15 +39,26 @@ class QuestionMenuWindow(QMainWindow):
 
         # Создаю и размещаю и команды в статистике
         statistics_layout = QVBoxLayout() # Создаю вертикальную стопку
-        self.teams = []
+        #self.teams = [] # Создаю список под объекты типа Team
+        self.scr_lbls_lst = [] # Создаю список текстов полей под статистику
         statistics_layout.addWidget(QLabel("Рейтинг"), alignment=Qt.AlignCenter)
 
-        for i in range(5):
-            self.teams.append(Team(team_names[i]))
-            name = self.teams[i].name
-            score = self.teams[i].score
+        for team in team_names:
+            # Создаю и добавляю объект команды в список
+            team_buf = Team(team)
+            #self.teams.append(team_buf)
+            # Добавляю в глобальную область
+            Config.teams.append(team_buf)
+            # Буферные переменные для удобной вставки имени и счета в строку рейтинга
+            name = Config.teams[-1].name
+            score = Config.teams[-1].score
             scr_lbl = QLabel("{} \t - {}".format(name, score))
+            # Добавляю текстовые метки в список для дальнейшей работы с ней
+            self.scr_lbls_lst.append(scr_lbl)
             statistics_layout.addWidget(scr_lbl, alignment=Qt.AlignLeft)
+
+        # Подсвечиваю текущую команду
+        self.scr_lbls_lst[Config.cur_team].setStyleSheet("color: red;")
 
 
         # Размещаю элементы в общей сетке
@@ -64,7 +77,20 @@ class QuestionMenuWindow(QMainWindow):
         # Сигналы
         self.exit_btn.clicked.connect(self.close)
 
+
+    def refresh_stat(self):
+        # Меняю цвет текста всех элементов к базовому
+        n = len(self.scr_lbls_lst)
+        for i in range(n):
+            cur_team = Config.teams[i]
+            self.scr_lbls_lst[i].setStyleSheet("color: black;")
+            self.scr_lbls_lst[i].setText("{} \t - {}".format(cur_team.name, cur_team.score))
+        # Обновляю значения 
+        self.scr_lbls_lst[Config.cur_team].setStyleSheet("color: red;")
+
+
 class Team():
     def __init__(self, name):
         self.name = name
         self.score = 0
+

@@ -110,13 +110,26 @@ class AnwserBtn(QPushButton):
     
 
     def on_click(self):
+        ct = Config.cur_team
         if self.right:
             QMessageBox.information(self, "Верный ответ", "Вы ответили правильно!\n + {} баллов".format(self.form.q_cost))
+            Config.teams[ct].score += self.form.q_cost
         else:
             QMessageBox.critical(self,"Неверный ответ", "Вы ошиблись, повезет в другой раз \n - {} баллов".format(self.form.q_cost))
+            Config.teams[ct].score -= self.form.q_cost
+
+        self.next_step()
 
         self.form.close()
+        self.par.refresh_stat()
         self.par.show()
         print("close window")
 
 
+# Метод который необходим для смены права выбора команд
+    def next_step(self):
+        n = len(Config.teams) # Количество команд
+        if (Config.cur_team + 1) >= n:
+            Config.cur_team = 0
+        else: 
+            Config.cur_team += 1
